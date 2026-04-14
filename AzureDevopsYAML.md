@@ -1,3 +1,10 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+# Docker
+# Build and push an image to Azure Container Registry
+
 trigger:
   branches:
     include:
@@ -7,20 +14,23 @@ trigger:
       - result/*
 
 variables:
-  dockerRegistryServiceConnection: 'acr-docker-connection'
+  dockerRegistryServiceConnection: 'acrAzureDevops1992'
   imageRepository: 'resultapp'
   dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
   tag: '$(Build.BuildId)'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'azure-devop-agent'   # self-hosted VM agent
 
 stages:
   - stage: BuildAndPush
+    displayName: Build and Push Image
     jobs:
       - job: BuildAndPush
+        displayName: Build and Push
         steps:
           - task: Docker@2
+            displayName: Build and Push Docker Image
             inputs:
               containerRegistry: '$(dockerRegistryServiceConnection)'
               repository: '$(imageRepository)'
@@ -28,3 +38,4 @@ stages:
               Dockerfile: '$(dockerfilePath)'
               tags: |
                 $(tag)
+                latest
